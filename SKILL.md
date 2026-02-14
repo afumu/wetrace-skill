@@ -44,7 +44,35 @@ compatibility: "仅支持 Windows 平台。依赖 Wetrace 服务 (https://github
 
 ### 3. 调用 API
 
-使用 WebFetch 工具调用 Wetrace API。基础 URL：`http://127.0.0.1:5200/api/v1`
+本 Skill 提供了 Python 脚本工具来调用 Wetrace API，比直接使用 WebFetch 更方便。
+
+#### 方式一：使用 Python 脚本（推荐）
+
+使用 `wetrace_api.py` 脚本，位于 `scripts/wetrace_api.py`：
+
+```bash
+# 查询会话
+python scripts/wetrace_api.py sessions --keyword "张三" --limit 20
+
+# 获取消息
+python scripts/wetrace_api.py messages --talker wxid_abc123 --limit 50
+
+# 搜索关键词
+python scripts/wetrace_api.py search --keyword "项目" --limit 30
+
+# 分析数据
+python scripts/wetrace_api.py analysis hourly wxid_abc123
+python scripts/wetrace_api.py analysis daily wxid_abc123
+
+# 导出聊天记录
+python scripts/wetrace_api.py export chat --talker wxid_abc123 --format html
+```
+
+**完整脚本文档**：查看 [scripts/README.md](scripts/README.md)
+
+#### 方式二：直接调用 API
+
+基础 URL：`http://127.0.0.1:5200/api/v1`
 
 **完整 API 文档**：参考 [references/api.md](references/api.md)
 
@@ -194,3 +222,71 @@ Wetrace 提供 8 个核心可视化功能，每个功能都会：
 - **生成 HTML 页面时**：始终参考 design-system.md 的设计系统
 - **文件保存位置**：统一保存到 `~/wetrace-exports/` 目录
 - **提供访问链接**：生成完成后提供 `file://` 协议的完整路径
+
+## 🐍 Python 脚本工具
+
+### 快速使用
+
+脚本位置：`scripts/wetrace_api.py`
+
+#### 安装依赖
+
+```bash
+cd scripts
+pip install -r requirements.txt
+```
+
+#### 常用命令
+
+```bash
+# 查看帮助
+python wetrace_api.py --help
+
+# 查询会话
+python wetrace_api.py sessions --keyword "张三" --limit 20
+
+# 获取消息（需要会话ID）
+python wetrace_api.py messages --talker wxid_abc123 --limit 50
+
+# 按时间范围查询
+python wetrace_api.py messages --talker wxid_abc123 --time-range "2024-01-01~2024-01-31"
+
+# 全文搜索
+python wetrace_api.py search --keyword "项目" --limit 30
+
+# 数据分析
+python wetrace_api.py analysis hourly wxid_abc123
+python wetrace_api.py analysis daily wxid_abc123
+python wetrace_api.py analysis type wxid_abc123
+
+# 获取总览
+python wetrace_api.py dashboard
+
+# 导出聊天记录
+python wetrace_api.py export chat --talker wxid_abc123 --format html
+```
+
+### 在代码中使用
+
+```python
+from scripts.wetrace_api import WetraceAPI
+
+# 创建API客户端
+api = WetraceAPI()
+
+# 查询会话
+sessions = api.get_sessions(keyword="张三", limit=10)
+for session in sessions:
+    print(f"{session['NickName']}: {session['MessageCount']} 条消息")
+
+# 获取消息
+messages = api.get_messages(talker_id="wxid_abc123", limit=50)
+for msg in messages:
+    print(f"[{msg['CreateTime']}] {msg['Content']}")
+
+# 搜索
+result = api.search(keyword="项目", limit=20)
+print(f"找到 {result['Total']} 条相关消息")
+```
+
+**完整文档**：查看 [scripts/README.md](scripts/README.md)
