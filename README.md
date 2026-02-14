@@ -80,16 +80,7 @@ Wetrace Skill 是一个专为 Claude Code 设计的技能包，让 AI 助手能�
 4. **Wetrace 服务运行**：确保 Wetrace 服务在 `http://127.0.0.1:5200` 运行
 
 ### 安装步骤
-
-#### 方法 1：通过 NPX 安装（推荐）
-
-```bash
-npx @afumu/wetrace-skill
-```
-
-这将自动下载并安装最新版本的 wetrace-skill 到 Claude Code。
-
-#### 方法 2：从源码安装
+#### 从源码安装
 
 ```bash
 # 克隆仓库
