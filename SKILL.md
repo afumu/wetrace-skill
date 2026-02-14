@@ -1,11 +1,11 @@
 ---
 name: wetrace
-description: "微信聊天记录分析助手，用于查询、分析和导出本地微信数据库中的聊天数据。适用场景：(1) 查看与特定联系人或群组的聊天消息，(2) 通过关键词搜索跨会话消息，(3) 分析聊天模式、活跃度趋势或关系动态，(4) 导出多种格式的聊天记录（HTML/PDF/DOCX/CSV/XLSX），(5) 获取社交互动和沟通习惯的洞察，(6) 管理客户关系和跟进提醒，(7) 生成年度报告或统计数据。触发词：wetrace、微信、聊天记录、wechat、分析聊天、导出聊天，或任何涉及微信聊天数据分析、消息搜索或关系洞察的请求。"
+description: "微信聊天记录分析助手，用于查询、分析和导出本地微信数据库中的聊天数据。适用场景：(1) 查看与特定联系人或群组的聊天消息，(2) 通过关键词搜索跨会话消息，(3) 分析聊天模式、活跃度趋势或关系动态，(4) 导出多种格式的聊天记录（HTML/PDF/DOCX/CSV/XLSX），(5) 获取社交互动和沟通习惯的洞察，(6) 管理客户关系和跟进提醒，(7) 生成年度报告或统计数据，(8) 生成精美的可视化 HTML 页面。触发词：wetrace、微信、聊天记录、wechat、分析聊天、导出聊天、生成报告、生成仪表板，或任何涉及微信聊天数据分析、消息搜索或关系洞察的请求。"
 ---
 
 # 微信数据分析助手
 
-查询、分析和导出微信聊天数据，提供 AI 驱动的智能洞察。
+查询、分析和导出微信聊天数据，提供 AI 驱动的智能洞察和精美的可视化页面。
 
 ## 前置条件
 
@@ -17,254 +17,151 @@ description: "微信聊天记录分析助手，用于查询、分析和导出本
 
 ### 1. 理解用户意图
 
-将用户请求分类为以下类别之一：
+将用户请求分类为以下类别：
 
-**查询（Query）**：查看消息、会话、联系人、群聊
-- 关键词："查看"、"显示"、"列出"、"show"、"list"、"view"
-- 示例："查看我和张三的聊天"、"显示所有群聊"
-
-**搜索（Search）**：通过关键词查找消息
-- 关键词："搜索"、"查找"、"search"、"find"
-- 示例："搜索包含'项目'的消息"、"找到所有关于会议的聊天"
-
-**分析（Analysis）**：分析模式、生成统计数据
-- 关键词："分析"、"统计"、"趋势"、"analyze"、"statistics"、"trend"
-- 示例："分析我和张三的聊天习惯"、"统计最活跃的时间段"
-
-**导出（Export）**：导出多种格式的数据
-- 关键词："导出"、"下载"、"保存"、"export"、"download"、"save"
-- 示例："导出聊天记录为PDF"、"保存所有联系人为Excel"
-
-**洞察（Insight）**：综合分析并提供建议
-- 关键词："总结"、"建议"、"洞察"、"summarize"、"recommend"、"insight"
-- 示例："总结我的社交情况"、"给我一些维护关系的建议"
+- **查询（Query）**：查看消息、会话、联系人、群聊
+- **搜索（Search）**：通过关键词查找消息
+- **分析（Analysis）**：分析模式、生成统计数据
+- **导出（Export）**：导出多种格式的数据
+- **洞察（Insight）**：综合分析并提供建议
+- **可视化（Visualization）**：生成精美的 HTML 页面
 
 ### 2. 提取参数
 
 从用户请求中识别关键参数：
-- **联系人名称**：提取人名或群名（如："张三"、"项目组"）
-- **时间范围**：提取时间段（如："最近一个月"、"2024年"、"last week"）
+- **联系人名称**：提取人名或群名
+- **时间范围**：提取时间段
 - **关键词**：提取搜索词
-- **格式**：提取导出格式（PDF、Excel 等）
+- **格式**：提取导出格式
 
 ### 3. 调用 API
 
 使用 WebFetch 工具调用 Wetrace API。基础 URL：`http://127.0.0.1:5200/api/v1`
 
-**完整 API 文档请参考 [api.md](references/api.md)**
+**完整 API 文档**：参考 [references/api.md](references/api.md)
 
 #### 常用 API 模式
 
-**获取会话列表：**
 ```
 GET /sessions?keyword={名称}&limit=50
-```
-
-**获取消息：**
-```
 GET /messages?talker_id={id}&time_range={范围}&limit=100
-```
-
-**搜索消息：**
-```
 GET /search?keyword={关键词}&time_range={范围}&limit=50
-```
-
-**获取分析数据：**
-```
 GET /analysis/hourly/{session_id}
 GET /analysis/daily/{session_id}
-GET /analysis/type_distribution/{session_id}
-```
-
-**导出聊天：**
-```
 GET /export/chat?talker={id}&format={格式}&time_range={范围}
 ```
 
-#### API 调用策略
-
-1. **查询任务**：直接调用 1-2 个 API
-2. **分析任务**：调用多个分析 API，然后综合分析
-3. **洞察任务**：调用 3-5 个 API 收集全面数据
-4. **处理分页**：对大数据集使用 `limit` 和 `offset`
-
 ### 4. 处理和呈现数据
 
-#### 查询/搜索结果
+#### 简单查询/搜索
 
-以清晰、结构化的格式呈现数据：
+以清晰、结构化的格式呈现数据。
 
-```markdown
-## 查询结果：与张三的聊天记录
-
-**时间范围：** 2024-01-01 至 2024-01-31
-**消息总数：** 156 条
-
-### 最近消息
-1. [2024-01-31 14:23] 张三: 明天见
-2. [2024-01-31 10:15] 我: 好的，明天下午2点
-...
-
-[显示前20条，如需更多可继续查询]
-```
-
-#### 分析结果
+#### 分析任务
 
 1. 从分析 API 获取原始数据
-2. 使用 [analysis-prompts.md](references/analysis-prompts.md) 中的模板生成 AI 总结
-3. 以清晰的结构呈现：
-
-```markdown
-## 聊天分析：与张三
-
-### 📊 基础统计
-- 消息总数：1,234 条
-- 聊天天数：89 天
-- 平均每天：13.8 条
-
-### ⏰ 活跃时间
-- 最活跃时段：晚上 8-10 点
-- 最活跃日期：周五
-
-### 💬 消息类型
-- 文本：78%
-- 图片：15%
-- 语音：5%
-- 其他：2%
-
-### 🤖 AI 洞察
-[使用 analysis-prompts.md 中的模板生成洞察]
-
-### 💡 建议
-[提供 2-3 条可操作的建议]
-```
+2. 使用 [references/analysis-prompts.md](references/analysis-prompts.md) 中的模板生成 AI 总结
+3. 以清晰的结构呈现
 
 #### 导出任务
 
-1. 使用适当格式调用导出 API
-2. 告知用户下载信息：
-
-```markdown
-✅ 导出成功！
-
-**文件名：** chat_export_张三_wxid123.pdf
-**格式：** PDF
-**大小：** 2.3 MB
-**内容：** 2024-01-01 至 2024-01-31 的聊天记录
-
-文件已生成，可通过浏览器下载。
-```
+调用导出 API，告知用户下载信息。
 
 #### 洞察任务
 
-1. 从多个 API 收集数据（sessions、dashboard、analysis、contacts）
+1. 从多个 API 收集数据
 2. 综合信息
 3. 生成全面的洞察和建议
 4. 使用 analysis-prompts.md 中的适当模板
 
 ### 5. 错误处理
 
-**API 返回 404：**
-- 数据库可能未加载
-- 联系人/会话可能不存在
-- 建议检查服务器状态或联系人名称
+- **API 返回 404**：数据库可能未加载，联系人/会话可能不存在
+- **API 返回 500**：服务器错误，建议检查日志
+- **无数据返回**：验证时间范围和联系人名称
+- **服务器无响应**：提示用户启动 Wetrace 服务
 
-**API 返回 500：**
-- 服务器发生错误
-- 建议检查服务器日志
-- 使用不同参数重试
+## 🎨 智能网页生成功能
 
-**无数据返回：**
-- 验证时间范围是否正确
-- 检查联系人名称是否准确
-- 建议使用更宽泛的搜索条件
+Wetrace 提供 8 个核心可视化功能，每个功能都会：
+1. 调用 Wetrace API 获取数据
+2. 使用 AI 分析生成总结
+3. 使用统一的设计系统生成精美的 HTML 页面
+4. 保存 HTML 文件到 `~/wetrace-exports/` 并提供访问链接
 
-**服务器无响应：**
-- 提示用户启动 Wetrace 服务
-- 提供命令：`./wetrace`
+### 可用的可视化功能
 
-## 使用示例
+当用户请求生成可视化页面时，根据触发关键词选择对应的功能：
 
-### 示例 1：查询聊天记录
+1. **智能摘要生成** - 触发词：总结聊天记录、生成摘要、智能总结
+   - 详见 [references/01-smart-summary.md](references/01-smart-summary.md)
 
-**用户：** "查看我和张三最近一个月的聊天"
+2. **待办事项提取** - 触发词：提取待办、找出任务、待办事项
+   - 详见 [references/02-todo-extraction.md](references/02-todo-extraction.md)
 
-**步骤：**
-1. 调用 `GET /sessions?keyword=张三` 查找会话
-2. 从响应中提取 `UserName`（如："wxid_abc123"）
-3. 调用 `GET /messages?talker_id=wxid_abc123&time_range=last_month&limit=100`
-4. 按时间顺序呈现消息
+3. **聊天活跃度热力图** - 触发词：活跃度热力图、聊天时间分布
+   - 详见 [references/03-activity-heatmap.md](references/03-activity-heatmap.md)
 
-### 示例 2：分析关系
+4. **互动趋势分析** - 触发词：趋势分析、互动趋势
+   - 详见 [references/04-trend-analysis.md](references/04-trend-analysis.md)
 
-**用户：** "分析我和张三的聊天习惯"
+5. **智能周报月报** - 触发词：生成周报、生成月报
+   - 详见 [references/05-weekly-monthly-report.md](references/05-weekly-monthly-report.md)
 
-**步骤：**
-1. 获取张三的会话 ID
-2. 调用多个分析 API：
-   - `GET /analysis/hourly/{id}`
-   - `GET /analysis/daily/{id}`
-   - `GET /analysis/weekday/{id}`
-   - `GET /analysis/type_distribution/{id}`
-3. 使用 analysis-prompts.md 中的"关系分析模板"
-4. 生成自然语言总结和洞察
+6. **数据仪表板** - 触发词：生成仪表板、数据总览
+   - 详见 [references/06-dashboard.md](references/06-dashboard.md)
 
-### 示例 3：搜索消息
+7. **智能对话摘要** - 触发词：对话摘要、智能总结、分类摘要
+   - 详见 [references/07-conversation-summary.md](references/07-conversation-summary.md)
 
-**用户：** "搜索所有包含'项目'的消息"
+8. **客户关系健康度** - 触发词：客户健康度、CRM 仪表板
+   - 详见 [references/08-customer-health.md](references/08-customer-health.md)
 
-**步骤：**
-1. 调用 `GET /search?keyword=项目&limit=50`
-2. 按会话分组呈现结果
-3. 高亮关键词匹配
-4. 如需要可提供上下文
+### 设计系统
 
-### 示例 4：导出聊天
+所有生成的 HTML 页面都遵循统一的设计系统，详见 [references/design-system.md](references/design-system.md)，包括：
+- 颜色系统：基于 HSL 的 CSS 变量
+- 组件库：Card、Badge、Button、Separator、Input 等
+- 布局系统：响应式容器和统一间距
+- 数据可视化：Chart.js 配置和颜色方案
 
-**用户：** "导出我和张三的聊天记录为PDF"
+### HTML 页面特点
 
-**步骤：**
-1. 获取张三的会话 ID
-2. 调用 `GET /export/chat?talker={id}&format=pdf&name=张三`
-3. 告知用户下载信息
+所有生成的 HTML 页面：
+- ✅ **独立运行**：无需服务器，双击即可在浏览器打开
+- ✅ **响应式设计**：适配所有设备（桌面/平板/手机）
+- ✅ **现代化样式**：使用 Tailwind CSS
+- ✅ **交互式图表**：使用 Chart.js 实现数据可视化
+- ✅ **清晰层次**：卡片布局、统一间距、语义化颜色
+- ✅ **易于分享**：可直接发送给他人查看
 
-### 示例 5：社交洞察
+### 使用流程
 
-**用户：** "总结我最近的社交情况"
+当用户请求生成网页时：
 
-**步骤：**
-1. 调用 `GET /dashboard` 获取概览
-2. 调用 `GET /analysis/personal/top_contacts` 获取排名
-3. 调用 `GET /contacts/need-contact?days=7` 获取待跟进
-4. 使用 analysis-prompts.md 中的"社交洞察模板"
-5. 生成综合总结和建议
-
-### 示例 6：客户管理
-
-**用户：** "哪些客户最近没联系了？"
-
-**步骤：**
-1. 调用 `GET /contacts/need-contact?days=7`
-2. 使用 analysis-prompts.md 中的"客户关系模板"
-3. 按紧急程度排序
-4. 提供具体的跟进建议
+1. **识别功能**：根据触发关键词匹配对应的功能
+2. **读取详细文档**：从 references 目录读取对应的 .md 文件
+3. **收集参数**：询问用户必要的参数（会话 ID、时间范围等）
+4. **调用 API**：获取所需数据
+5. **AI 分析**：使用 analysis-prompts.md 中的模板生成总结
+6. **生成 HTML**：使用 design-system.md 风格生成精美页面
+7. **保存文件**：保存到 `~/wetrace-exports/` 目录
+8. **提供链接**：返回文件路径和访问链接
 
 ## 高级功能
 
 ### 时间范围解析
 
 支持多种格式：
-- **中文**："最近一周"、"上个月"、"今年"
-- **英文**："last week"、"last month"、"this year"
-- **绝对时间**："2024-01-01~2024-01-31"
-- **相对天数**："last 7 days"、"last 30 days"
+- 中文：最近一周、上个月、今年
+- 英文：last week、last month、this year
+- 绝对时间：2024-01-01~2024-01-31
+- 相对天数：last 7 days、last 30 days
 
 转换为 API 格式：`YYYY-MM-DD~YYYY-MM-DD`
 
 ### 联系人名称匹配
 
-当用户提供名称时：
 1. 首先在会话中尝试精确匹配
 2. 如未找到，在联系人中搜索
 3. 如有多个匹配，请用户明确
@@ -278,14 +175,6 @@ GET /export/chat?talker={id}&format={格式}&time_range={范围}
 3. 告知用户总数
 4. 如数据集非常大，建议导出
 
-### 多 API 综合
-
-对于全面分析：
-1. 并行调用 3-5 个相关 API
-2. 等待所有响应
-3. 将数据综合成连贯的叙述
-4. 突出相关性和模式
-
 ## 使用提示
 
 - 调用 API 前始终验证服务器是否运行
@@ -294,3 +183,6 @@ GET /export/chat?talker={id}&format={格式}&time_range={范围}
 - 尊重用户隐私 - 不要对关系做出假设
 - 提供后续步骤或跟进行动
 - 同等处理中文和英文查询
+- **生成 HTML 页面时**：始终参考 design-system.md 的设计系统
+- **文件保存位置**：统一保存到 `~/wetrace-exports/` 目录
+- **提供访问链接**：生成完成后提供 `file://` 协议的完整路径
